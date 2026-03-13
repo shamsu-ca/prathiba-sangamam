@@ -100,6 +100,64 @@ select option { background: #fff; }
   margin-top: 4px;
 }
 .dl-btn:active { opacity: 0.88; transform: scale(0.99); }
+
+.zoom-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  border: 1.5px solid #d0d8e4;
+  border-radius: 7px;
+  padding: 4px 8px;
+  height: 38px;
+}
+.zoom-btn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #0a7cff;
+  cursor: pointer;
+  padding: 0 6px;
+  line-height: 1;
+  font-family: inherit;
+}
+.zoom-btn:active { color: #003d99; }
+#zoomLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: #444;
+  min-width: 42px;
+  text-align: center;
+}
+
+.dpad {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.dp-mid {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.dp-btn {
+  background: #fff;
+  border: 1.5px solid #d0d8e4;
+  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  font-size: 13px;
+  cursor: pointer;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+  font-family: inherit;
+}
+.dp-btn:active { background: #e8f0ff; }
+.dp-center { font-size: 15px; color: #0a7cff; }
 </style>
 </head>
 <body>
@@ -137,6 +195,30 @@ select option { background: #fff; }
         <option value="Distinction">Distinction</option>
         <option value="Top Plus">Top Plus</option>
       </select>
+    </div>
+  </div>
+
+  <!-- Zoom Controls -->
+  <div class="row">
+    <div class="field">
+      <label>Zoom</label>
+      <div class="zoom-row">
+        <button class="zoom-btn" onclick="changeZoom(-0.05)">－</button>
+        <span id="zoomLabel">100%</span>
+        <button class="zoom-btn" onclick="changeZoom(0.05)">＋</button>
+      </div>
+    </div>
+    <div class="field">
+      <label>Move Photo</label>
+      <div class="dpad">
+        <button class="dp-btn" onclick="movePhoto(0,-40)">▲</button>
+        <div class="dp-mid">
+          <button class="dp-btn" onclick="movePhoto(-40,0)">◀</button>
+          <button class="dp-btn dp-center" onclick="resetPhoto()">⊙</button>
+          <button class="dp-btn" onclick="movePhoto(40,0)">▶</button>
+        </div>
+        <button class="dp-btn" onclick="movePhoto(0,40)">▼</button>
+      </div>
     </div>
   </div>
 
@@ -241,6 +323,7 @@ canvas.addEventListener("touchend", () => photoDragging = false);
 canvas.addEventListener("wheel", e => {
   e.preventDefault();
   photoScale = Math.min(Math.max(0.1, photoScale - e.deltaY * 0.001), 10);
+  document.getElementById("zoomLabel").textContent = Math.round(photoScale * 100) + "%";
   drawCanvas();
 }, { passive: false });
 
@@ -272,7 +355,27 @@ function downloadImage() {
   a.href = canvas.toDataURL("image/png");
   a.click();
 }
-window.downloadImage = downloadImage;
+function changeZoom(delta) {
+  photoScale = Math.min(Math.max(0.1, photoScale + delta), 10);
+  document.getElementById("zoomLabel").textContent = Math.round(photoScale * 100) + "%";
+  drawCanvas();
+}
+function movePhoto(dx, dy) {
+  photoPosX += dx;
+  photoPosY += dy;
+  drawCanvas();
+}
+function resetPhoto() {
+  if (userImage) {
+    photoScale = canvas.width / userImage.width;
+    photoPosX = 0; photoPosY = 0;
+    document.getElementById("zoomLabel").textContent = "100%";
+    drawCanvas();
+  }
+}
+window.changeZoom = changeZoom;
+window.movePhoto = movePhoto;
+window.resetPhoto = resetPhoto;
 
 frameImage.onload = drawCanvas;
 frameImage.onerror = drawCanvas;
