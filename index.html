@@ -2,68 +2,87 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>MIC Prathiba Sangamam</title>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-body {
-  font-family: 'Anek Malayalam', sans-serif;
+html, body {
+  height: 100%;
+  overflow: hidden;
   background: #f0f4f8;
-  min-height: 100vh;
+  font-family: 'Anek Malayalam', sans-serif;
+}
+
+.app {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 12px;
-  gap: 12px;
+  height: 100vh;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 10px 10px 0 10px;
+  gap: 8px;
 }
 
 h3 {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
   color: #1a1a2e;
   text-align: center;
-  padding: 4px 0;
+  flex-shrink: 0;
+}
+
+/* Canvas grows to fill remaining space */
+.canvas-wrap {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
 }
 
 canvas {
-  width: 100%;
-  max-width: 500px;
-  height: auto;
-  border-radius: 10px;
-  background: #ddd;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
   display: block;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  border-radius: 8px;
+  background: #ccc;
+  box-shadow: 0 3px 16px rgba(0,0,0,0.15);
   touch-action: none;
+  user-select: none;
 }
 
+/* Controls — fixed height at bottom */
 .controls {
-  width: 100%;
-  max-width: 500px;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 7px;
+  padding-bottom: 10px;
 }
 
 .row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  gap: 8px;
 }
 
-.field { display: flex; flex-direction: column; gap: 4px; }
+.field { display: flex; flex-direction: column; gap: 3px; }
 
 label {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
-  color: #555;
+  color: #666;
   letter-spacing: 0.03em;
 }
 
-input, select {
+input[type="text"], input[type="file"], select {
   width: 100%;
-  padding: 9px 11px;
+  padding: 8px 10px;
   font-size: 14px;
   border-radius: 7px;
   border: 1.5px solid #d0d8e4;
@@ -71,24 +90,41 @@ input, select {
   color: #222;
   font-family: inherit;
   outline: none;
-  transition: border-color 0.2s;
+  -webkit-appearance: none;
 }
-input:focus, select:focus { border-color: #0a7cff; }
-input[type="file"] { padding: 7px 9px; font-size: 12px; color: #666; cursor: pointer; }
-input[type="color"] {
-  padding: 2px;
-  height: 38px;
-  width: 100%;
-  cursor: pointer;
-  border-radius: 7px;
-}
+input[type="text"]:focus, select:focus { border-color: #0a7cff; }
+input[type="file"] { padding: 6px 8px; font-size: 12px; color: #666; }
 select option { background: #fff; }
+
+/* Zoom slider row */
+.zoom-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.zoom-row label { white-space: nowrap; flex-shrink: 0; }
+input[type="range"] {
+  flex: 1;
+  height: 4px;
+  accent-color: #0a7cff;
+  cursor: pointer;
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+.zoom-val {
+  font-size: 12px;
+  font-weight: 600;
+  color: #0a7cff;
+  min-width: 38px;
+  text-align: right;
+}
 
 .dl-btn {
   width: 100%;
-  padding: 13px;
-  font-size: 16px;
-  border-radius: 9px;
+  padding: 12px;
+  font-size: 15px;
+  border-radius: 8px;
   border: none;
   background: linear-gradient(135deg, #0a7cff, #0056b3);
   color: #fff;
@@ -96,154 +132,81 @@ select option { background: #fff; }
   cursor: pointer;
   font-family: inherit;
   letter-spacing: 0.03em;
-  transition: opacity 0.2s, transform 0.15s;
-  margin-top: 4px;
+  -webkit-tap-highlight-color: transparent;
 }
-.dl-btn:active { opacity: 0.88; transform: scale(0.99); }
-
-.zoom-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #fff;
-  border: 1.5px solid #d0d8e4;
-  border-radius: 7px;
-  padding: 4px 8px;
-  height: 38px;
-}
-.zoom-btn {
-  background: none;
-  border: none;
-  font-size: 18px;
-  color: #0a7cff;
-  cursor: pointer;
-  padding: 0 6px;
-  line-height: 1;
-  font-family: inherit;
-}
-.zoom-btn:active { color: #003d99; }
-#zoomLabel {
-  font-size: 13px;
-  font-weight: 600;
-  color: #444;
-  min-width: 42px;
-  text-align: center;
-}
-
-.dpad {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-}
-.dp-mid {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-}
-.dp-btn {
-  background: #fff;
-  border: 1.5px solid #d0d8e4;
-  border-radius: 6px;
-  width: 32px;
-  height: 32px;
-  font-size: 13px;
-  cursor: pointer;
-  color: #333;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.15s;
-  font-family: inherit;
-}
-.dp-btn:active { background: #e8f0ff; }
-.dp-center { font-size: 15px; color: #0a7cff; }
+.dl-btn:active { opacity: 0.85; }
 </style>
 </head>
 <body>
+<div class="app">
 
-<h3>MIC Prathiba Sangamam</h3>
+  <h3>MIC Prathiba Sangamam</h3>
 
-<canvas id="canvas" width="2480" height="2953"></canvas>
-
-<div class="controls">
-
-  <!-- Photo & Name -->
-  <div class="row">
-    <div class="field">
-      <label>Photo</label>
-      <input type="file" id="upload" accept="image/*">
-    </div>
-    <div class="field">
-      <label>Name</label>
-      <input type="text" id="nameInput" placeholder="Enter name">
-    </div>
+  <div class="canvas-wrap">
+    <canvas id="canvas" width="2480" height="2953"></canvas>
   </div>
 
-  <!-- Class & Result -->
-  <div class="row">
-    <div class="field">
-      <label>Class</label>
-      <select id="classSelect">
-        <option value="5th">5th</option>
-        <option value="7th">7th</option>
-      </select>
-    </div>
-    <div class="field">
-      <label>Result</label>
-      <select id="resultSelect">
-        <option value="Distinction">Distinction</option>
-        <option value="Top Plus">Top Plus</option>
-      </select>
-    </div>
-  </div>
+  <div class="controls">
 
-  <!-- Zoom Controls -->
-  <div class="row">
-    <div class="field">
+    <div class="row">
+      <div class="field">
+        <label>Photo</label>
+        <input type="file" id="upload" accept="image/*">
+      </div>
+      <div class="field">
+        <label>Name</label>
+        <input type="text" id="nameInput" placeholder="Enter name">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="field">
+        <label>Class</label>
+        <select id="classSelect">
+          <option value="5th">5th</option>
+          <option value="7th">7th</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Result</label>
+        <select id="resultSelect">
+          <option value="Distinction">Distinction</option>
+          <option value="Top Plus">Top Plus</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Zoom slider -->
+    <div class="zoom-row">
       <label>Zoom</label>
-      <div class="zoom-row">
-        <button class="zoom-btn" onclick="changeZoom(-0.05)">－</button>
-        <span id="zoomLabel">100%</span>
-        <button class="zoom-btn" onclick="changeZoom(0.05)">＋</button>
-      </div>
+      <input type="range" id="zoomSlider" min="10" max="500" value="100" step="1">
+      <span class="zoom-val" id="zoomVal">100%</span>
     </div>
-    <div class="field">
-      <label>Move Photo</label>
-      <div class="dpad">
-        <button class="dp-btn" onclick="movePhoto(0,-40)">▲</button>
-        <div class="dp-mid">
-          <button class="dp-btn" onclick="movePhoto(-40,0)">◀</button>
-          <button class="dp-btn dp-center" onclick="resetPhoto()">⊙</button>
-          <button class="dp-btn" onclick="movePhoto(40,0)">▶</button>
-        </div>
-        <button class="dp-btn" onclick="movePhoto(0,40)">▼</button>
-      </div>
-    </div>
+
+    <button class="dl-btn" onclick="downloadImage()">⬇ Download</button>
+
   </div>
-
-  <button class="dl-btn" onclick="downloadImage()">⬇ Download</button>
-
 </div>
 
 <script>
-// ── EDIT THESE VALUES TO ADJUST TEXT POSITION & STYLE ──
+// ── CONFIG — edit values here ──
 const CFG = {
-  nameSize:   78,        // Name Font Size
-  detailSize: 67,        // Details Font Size
-  lineGap:    18,        // Line Gap
-  textColor:  "#ffffff", // Text Colour
-  textX:      812,       // Text X (px)
-  textY:      2369       // Text Y (px)
+  nameSize:   78,
+  detailSize: 67,
+  lineGap:    18,
+  textColor:  "#ffffff",
+  textX:      812,
+  textY:      2369
 };
-// ─────────────────────────────────────────────────────
 
 const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
+const ctx    = canvas.getContext("2d");
+const slider = document.getElementById("zoomSlider");
+const zoomVal= document.getElementById("zoomVal");
 
 let userImage = null;
 let photoScale = 1, photoPosX = 0, photoPosY = 0;
-let photoDragging = false, dragStartX, dragStartY, startPX, startPY;
+let dragging = false, dragStartX = 0, dragStartY = 0, startPX = 0, startPY = 0;
 
 const frameImage = new Image();
 frameImage.crossOrigin = "anonymous";
@@ -276,59 +239,79 @@ function drawCanvas() {
   ctx.fillText(`${cls} - ${res}`, CFG.textX, CFG.textY + CFG.nameSize + CFG.lineGap);
 }
 
-// ── Canvas coordinate helper ──
-function coords(e, touch) {
+// ── Canvas coords (handles display vs actual canvas size) ──
+function toCanvas(clientX, clientY) {
   const rect = canvas.getBoundingClientRect();
-  const sx = canvas.width / rect.width;
-  const sy = canvas.height / rect.height;
-  const src = touch ? e.touches[0] : e;
-  return { x: (src.clientX - rect.left) * sx, y: (src.clientY - rect.top) * sy };
+  return {
+    x: (clientX - rect.left) * (canvas.width  / rect.width),
+    y: (clientY - rect.top)  * (canvas.height / rect.height)
+  };
 }
 
-// ── Mouse drag ──
+// ── Mouse ──
 canvas.addEventListener("mousedown", e => {
-  const c = coords(e, false);
-  photoDragging = true;
-  dragStartX = c.x; dragStartY = c.y;
+  e.preventDefault();
+  const c = toCanvas(e.clientX, e.clientY);
+  dragging = true; dragStartX = c.x; dragStartY = c.y;
   startPX = photoPosX; startPY = photoPosY;
 });
 window.addEventListener("mousemove", e => {
-  if (!photoDragging) return;
-  const c = coords(e, false);
+  if (!dragging) return;
+  const c = toCanvas(e.clientX, e.clientY);
   photoPosX = startPX + (c.x - dragStartX);
   photoPosY = startPY + (c.y - dragStartY);
   drawCanvas();
 });
-window.addEventListener("mouseup", () => photoDragging = false);
+window.addEventListener("mouseup", () => dragging = false);
 
-// ── Touch drag ──
+// ── Touch (single finger = drag, does NOT block page scroll outside canvas) ──
 canvas.addEventListener("touchstart", e => {
+  if (e.touches.length !== 1) return;
   e.preventDefault();
-  const c = coords(e, true);
-  photoDragging = true;
-  dragStartX = c.x; dragStartY = c.y;
+  const t = e.touches[0];
+  const c = toCanvas(t.clientX, t.clientY);
+  dragging = true; dragStartX = c.x; dragStartY = c.y;
   startPX = photoPosX; startPY = photoPosY;
 }, { passive: false });
+
 canvas.addEventListener("touchmove", e => {
+  if (!dragging || e.touches.length !== 1) return;
   e.preventDefault();
-  if (!photoDragging) return;
-  const c = coords(e, true);
+  const t = e.touches[0];
+  const c = toCanvas(t.clientX, t.clientY);
   photoPosX = startPX + (c.x - dragStartX);
   photoPosY = startPY + (c.y - dragStartY);
   drawCanvas();
 }, { passive: false });
-canvas.addEventListener("touchend", () => photoDragging = false);
 
-// ── Scroll zoom ──
+canvas.addEventListener("touchend", () => dragging = false);
+
+// ── Zoom slider ──
+slider.addEventListener("input", () => {
+  if (!userImage) return;
+  const pct = parseInt(slider.value);
+  zoomVal.textContent = pct + "%";
+  // Scale relative to original fit-to-canvas scale
+  photoScale = (canvas.width / userImage.width) * (pct / 100);
+  drawCanvas();
+});
+
+// ── Scroll wheel (desktop) ──
 canvas.addEventListener("wheel", e => {
   e.preventDefault();
-  photoScale = Math.min(Math.max(0.1, photoScale - e.deltaY * 0.001), 10);
-  document.getElementById("zoomLabel").textContent = Math.round(photoScale * 100) + "%";
+  if (!userImage) return;
+  photoScale = Math.min(Math.max(0.05, photoScale - e.deltaY * 0.001), 10);
+  const baseScale = canvas.width / userImage.width;
+  const pct = Math.round((photoScale / baseScale) * 100);
+  slider.value = Math.min(Math.max(10, pct), 500);
+  zoomVal.textContent = slider.value + "%";
   drawCanvas();
 }, { passive: false });
 
 // ── Upload ──
 document.getElementById("upload").addEventListener("change", function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
   const reader = new FileReader();
   reader.onload = ev => {
     const img = new Image();
@@ -336,13 +319,16 @@ document.getElementById("upload").addEventListener("change", function(e) {
       userImage = img;
       photoScale = canvas.width / img.width;
       photoPosX = 0; photoPosY = 0;
+      slider.value = 100;
+      zoomVal.textContent = "100%";
       drawCanvas();
     };
     img.src = ev.target.result;
   };
-  reader.readAsDataURL(e.target.files[0]);
+  reader.readAsDataURL(file);
 });
 
+// ── Live text updates ──
 ["nameInput", "classSelect", "resultSelect"].forEach(id =>
   document.getElementById(id).addEventListener("input", drawCanvas)
 );
@@ -355,29 +341,9 @@ function downloadImage() {
   a.href = canvas.toDataURL("image/png");
   a.click();
 }
-function changeZoom(delta) {
-  photoScale = Math.min(Math.max(0.1, photoScale + delta), 10);
-  document.getElementById("zoomLabel").textContent = Math.round(photoScale * 100) + "%";
-  drawCanvas();
-}
-function movePhoto(dx, dy) {
-  photoPosX += dx;
-  photoPosY += dy;
-  drawCanvas();
-}
-function resetPhoto() {
-  if (userImage) {
-    photoScale = canvas.width / userImage.width;
-    photoPosX = 0; photoPosY = 0;
-    document.getElementById("zoomLabel").textContent = "100%";
-    drawCanvas();
-  }
-}
-window.changeZoom = changeZoom;
-window.movePhoto = movePhoto;
-window.resetPhoto = resetPhoto;
+window.downloadImage = downloadImage;
 
-frameImage.onload = drawCanvas;
+frameImage.onload  = drawCanvas;
 frameImage.onerror = drawCanvas;
 drawCanvas();
 </script>
