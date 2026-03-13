@@ -27,11 +27,11 @@ padding: 15px;
 border-radius: 12px;
 box-shadow: 0 10px 25px rgba(0,0,0,0.1);
 width: 100%;
-max-width: 600px; /* Increased max-width for better fit */
+max-width: 600px;
 box-sizing: border-box;
 display: flex;
 flex-direction: column;
-height: calc(100vh - 20px); /* Fit to window height */
+height: calc(100vh - 20px);
 }
 
 h3 {
@@ -45,7 +45,7 @@ text-align: center;
 canvas{
 width: 100%;
 height: auto;
-max-height: calc(100vh - 220px); /* Dynamic height to fit window */
+max-height: calc(100vh - 220px);
 object-fit: contain;
 border-radius: 8px;
 background:#eee;
@@ -110,7 +110,6 @@ transform: translateY(-2px);
 box-shadow: 0 5px 15px rgba(10, 124, 255, 0.3);
 }
 
-/* Responsive adjustments for very small screens */
 @media (max-width: 400px) {
     .row {
         flex-direction: column;
@@ -171,6 +170,34 @@ box-shadow: 0 5px 15px rgba(10, 124, 255, 0.3);
 
 <script>
 
+// ==========================================
+// EDITABLE CONFIGURATION
+// ==========================================
+
+const CONFIG = {
+    // Font Sizes
+    NAME_FONT_SIZE: 120,
+    CLASS_FONT_SIZE: 90,
+    RESULT_FONT_SIZE: 90,
+
+    // Colors (Hex)
+    TEXT_COLOR: "#ffffff", // Default White
+
+    // Vertical Position (Distance from Bottom)
+    // Canvas Height is 2953. 
+    TEXT_HEIGHT_FROM_BOTTOM: 953, 
+
+    // Horizontal Positions (X Axis)
+    // Canvas Width is 2480. 
+    COL_1_X: 413,  // canvas.width / 6
+    COL_2_X: 1240, // canvas.width / 2
+    COL_3_X: 2066  // canvas.width * 5 / 6
+};
+
+// ==========================================
+// END CONFIGURATION
+// ==========================================
+
 const canvas=document.getElementById("canvas");
 const ctx=canvas.getContext("2d");
 
@@ -183,23 +210,6 @@ let posX=0;
 let posY=0;
 
 let dragging=false;
-let startX,startY;
-
-// Default values for hidden controls
-const defaults = {
-    nameSize: 120,
-    classSize: 90,
-    resultSize: 90,
-    pos1: 2000,
-    pos2: 2000,
-    pos3: 2000
-};
-
-// Helper function to safely get value
-function getValue(id, def) {
-    const el = document.getElementById(id);
-    return el ? el.value : def;
-}
 
 function drawCanvas(){
 
@@ -211,75 +221,67 @@ if(userImage){
     ctx.drawImage(userImage,posX,posY,w,h);
 }
 
-// Ensure frame is loaded
 if(frameImage.complete) { 
     ctx.drawImage(frameImage,0,0,canvas.width,canvas.height);
 }
 
-let name=getValue("nameInput", "");
-let cls=getValue("classSelect", "5th");
-let res=getValue("resultSelect", "Distinction");
+// Get Input Values
+const name = document.getElementById("nameInput").value;
+const cls = document.getElementById("classSelect").value;
+const res = document.getElementById("resultSelect").value;
 
-// Use values from inputs if they exist, otherwise use defaults
-let nameSize=getValue("nameSize", defaults.nameSize);
-let classSize=getValue("classSize", defaults.classSize);
-let resultSize=getValue("resultSize", defaults.resultSize);
+// Calculate Y position from bottom
+const textY = canvas.height - CONFIG.TEXT_HEIGHT_FROM_BOTTOM;
 
-let y1=getValue("pos1", defaults.pos1);
-let y2=getValue("pos2", defaults.pos2);
-let y3=getValue("pos3", defaults.pos3);
+ctx.fillStyle = CONFIG.TEXT_COLOR;
+ctx.textAlign = "center";
 
-let col1=canvas.width/6;
-let col2=canvas.width/2;
-let col3=canvas.width*5/6;
+// Draw Column 1
+drawColumn(CONFIG.COL_1_X, textY, name, cls, res);
 
-ctx.textAlign="center";
-ctx.fillStyle="#000";
+// Draw Column 2
+drawColumn(CONFIG.COL_2_X, textY, name, cls, res);
 
-drawColumn(col1,y1,name,cls,res,nameSize,classSize,resultSize);
-drawColumn(col2,y2,name,cls,res,nameSize,classSize,resultSize);
-drawColumn(col3,y3,name,cls,res,nameSize,classSize,resultSize);
-
+// Draw Column 3
+drawColumn(CONFIG.COL_3_X, textY, name, cls, res);
 }
 
-function drawColumn(x,y,name,cls,res,nameSize,classSize,resultSize){
-    ctx.font="600 "+nameSize+"px Anek Malayalam";
-    ctx.fillText(name,x,y);
-    
-    ctx.font="600 "+classSize+"px Anek Malayalam";
-    ctx.fillText(cls,x,y+parseInt(classSize)+10);
-    
-    ctx.font="600 "+resultSize+"px Anek Malayalam";
-    ctx.fillText(res,x,y+parseInt(classSize)+parseInt(resultSize)+25);
+function drawColumn(x, y, name, cls, res){
+    // Draw Name
+    ctx.font = `600 ${CONFIG.NAME_FONT_SIZE}px 'Anek Malayalam'`;
+    ctx.fillText(name, x, y);
+
+    // Draw Class
+    ctx.font = `600 ${CONFIG.CLASS_FONT_SIZE}px 'Anek Malayalam'`;
+    ctx.fillText(cls, x, y + parseInt(CONFIG.CLASS_FONT_SIZE) + 10);
+
+    // Draw Result
+    ctx.font = `600 ${CONFIG.RESULT_FONT_SIZE}px 'Anek Malayalam'`;
+    ctx.fillText(res, x, y + parseInt(CONFIG.CLASS_FONT_SIZE) + parseInt(CONFIG.RESULT_FONT_SIZE) + 25);
 }
 
-const uploadEl = document.getElementById("upload");
-if(uploadEl) {
-    uploadEl.addEventListener("change",function(e){
-        let reader=new FileReader();
-        reader.onload=function(event){
-            let img=new Image();
-            img.onload=function(){
-                userImage=img;
-                scale=canvas.width/img.width;
-                posX=0;
-                posY=0;
-                drawCanvas();
-            };
-            img.src=event.target.result;
+document.getElementById("upload").addEventListener("change", function(e){
+    let reader=new FileReader();
+    reader.onload=function(event){
+        let img=new Image();
+        img.onload=function(){
+            userImage=img;
+            scale=canvas.width/img.width;
+            posX=0;
+            posY=0;
+            drawCanvas();
         };
-        reader.readAsDataURL(e.target.files[0]);
-    });
-}
-
-// Listen for inputs on the specific controls we kept
-const inputs = ["nameInput", "classSelect", "resultSelect"];
-inputs.forEach(id => {
-    const el = document.getElementById(id);
-    if(el) el.addEventListener("input", drawCanvas);
+        img.src=event.target.result;
+    };
+    reader.readAsDataURL(e.target.files[0]);
 });
 
-// Drag logic variables
+// Auto-update on input changes
+["nameInput", "classSelect", "resultSelect"].forEach(id => {
+    document.getElementById(id).addEventListener("input", drawCanvas);
+});
+
+// Drag Logic
 let dragStartX, dragStartY, startPosX, startPosY;
 
 canvas.addEventListener("mousedown", e => {
@@ -297,7 +299,6 @@ canvas.addEventListener("mousedown", e => {
 
 canvas.addEventListener("mousemove", e => {
     if(!dragging) return;
-    
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
@@ -315,17 +316,16 @@ window.addEventListener("mouseup", () => dragging = false);
 
 canvas.addEventListener("wheel", e => {
     e.preventDefault();
-    const zoomSpeed = 0.001;
-    scale += e.deltaY * -zoomSpeed;
+    scale += e.deltaY * -0.001;
     scale = Math.min(Math.max(0.5, scale), 5);
     drawCanvas();
 });
 
 function downloadImage(){
-    let name=getValue("nameInput", "campaign");
-    let link=document.createElement("a");
-    link.download=name+".png";
-    link.href=canvas.toDataURL();
+    const name = document.getElementById("nameInput").value || "campaign";
+    const link = document.createElement("a");
+    link.download = name + ".png";
+    link.href = canvas.toDataURL();
     link.click();
 }
 
