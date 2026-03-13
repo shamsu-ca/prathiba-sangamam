@@ -4,508 +4,248 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MIC Prathiba Sangamam</title>
-<link href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-:root {
-  --gold: #c8a94a;
-  --gold-light: #f0d080;
-  --dark: #1a1a2e;
-  --panel-bg: #16213e;
-  --panel-border: #0f3460;
-  --accent: #e94560;
-  --text: #eee;
-  --muted: #888;
-  --input-bg: #0f2040;
-  --input-border: #1e4070;
-}
-
 body {
   font-family: 'Anek Malayalam', sans-serif;
-  background: var(--dark);
-  color: var(--text);
+  background: #f0f4f8;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  overflow: hidden;
-}
-
-.app {
-  width: 100vw;
-  height: 100vh;
-  display: grid;
-  grid-template-columns: 1fr 320px;
-  grid-template-rows: 48px 1fr;
-  gap: 0;
-}
-
-/* ── TOP BAR ── */
-.topbar {
-  grid-column: 1 / -1;
-  background: var(--panel-bg);
-  border-bottom: 1px solid var(--panel-border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 18px;
-  z-index: 10;
-}
-
-.topbar h3 {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--gold-light);
-  letter-spacing: 0.04em;
-}
-
-.admin-btn {
-  background: transparent;
-  color: var(--muted);
-  border: 1px solid var(--input-border);
-  padding: 5px 14px;
-  font-size: 12px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-family: inherit;
-  transition: all 0.2s;
-  letter-spacing: 0.03em;
-}
-.admin-btn:hover { color: var(--text); border-color: var(--gold); }
-.admin-btn.active { background: rgba(200,169,74,0.15); color: var(--gold); border-color: var(--gold); }
-
-/* ── CANVAS AREA ── */
-.canvas-area {
-  background: #111;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  position: relative;
-  cursor: crosshair;
-}
-
-canvas {
-  max-width: 100%;
-  max-height: 100%;
-  width: auto;
-  height: auto;
-  object-fit: contain;
-  border-radius: 4px;
-  box-shadow: 0 8px 40px rgba(0,0,0,0.6);
-  display: block;
-}
-
-/* ── SIDEBAR ── */
-.sidebar {
-  background: var(--panel-bg);
-  border-left: 1px solid var(--panel-border);
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
-  padding: 16px;
+  padding: 12px;
   gap: 12px;
 }
 
-.sidebar::-webkit-scrollbar { width: 4px; }
-.sidebar::-webkit-scrollbar-track { background: transparent; }
-.sidebar::-webkit-scrollbar-thumb { background: var(--panel-border); border-radius: 2px; }
-
-.section-title {
-  font-size: 10px;
+h3 {
+  font-size: 18px;
   font-weight: 700;
-  letter-spacing: 0.12em;
-  color: var(--muted);
-  text-transform: uppercase;
-  padding-bottom: 6px;
-  border-bottom: 1px solid var(--panel-border);
+  color: #1a1a2e;
+  text-align: center;
+  padding: 4px 0;
 }
 
-.field { display: flex; flex-direction: column; gap: 5px; }
-
-label {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--muted);
-  letter-spacing: 0.05em;
-}
-
-input[type="text"], input[type="file"], select, input[type="number"] {
+canvas {
   width: 100%;
-  padding: 8px 10px;
-  font-size: 13px;
-  border-radius: 6px;
-  border: 1px solid var(--input-border);
-  background: var(--input-bg);
-  color: var(--text);
-  font-family: inherit;
-  transition: border-color 0.2s;
-  outline: none;
+  max-width: 500px;
+  height: auto;
+  border-radius: 10px;
+  background: #ddd;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  display: block;
+  touch-action: none;
 }
-input:focus, select:focus { border-color: var(--gold); }
-input[type="file"] { padding: 6px 8px; font-size: 12px; color: var(--muted); cursor: pointer; }
-select option { background: var(--panel-bg); }
 
-.row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-
-/* Color row */
-.color-row { display: flex; align-items: center; gap: 8px; }
-input[type="color"] {
-  width: 36px;
-  height: 32px;
-  padding: 2px;
-  border-radius: 5px;
-  cursor: pointer;
-  flex-shrink: 0;
-  background: var(--input-bg);
-}
-.hex-label { font-family: monospace; font-size: 12px; color: var(--muted); }
-
-/* Admin panel */
-.admin-section {
-  display: none;
+.controls {
+  width: 100%;
+  max-width: 500px;
+  display: flex;
   flex-direction: column;
   gap: 10px;
-  border: 1px solid rgba(200,169,74,0.25);
-  border-radius: 8px;
-  padding: 12px;
-  background: rgba(200,169,74,0.04);
 }
-.admin-section.show { display: flex; }
-.admin-section .section-title { color: var(--gold); border-color: rgba(200,169,74,0.3); }
 
-/* Position drag notice */
-.drag-note {
-  font-size: 11px;
-  color: var(--muted);
-  background: rgba(255,255,255,0.04);
-  border-radius: 5px;
-  padding: 6px 8px;
-  line-height: 1.5;
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
 }
-.drag-note span { color: var(--gold-light); }
 
-/* Download button */
+.field { display: flex; flex-direction: column; gap: 4px; }
+
+label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #555;
+  letter-spacing: 0.03em;
+}
+
+input, select {
+  width: 100%;
+  padding: 9px 11px;
+  font-size: 14px;
+  border-radius: 7px;
+  border: 1.5px solid #d0d8e4;
+  background: #fff;
+  color: #222;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+}
+input:focus, select:focus { border-color: #0a7cff; }
+input[type="file"] { padding: 7px 9px; font-size: 12px; color: #666; cursor: pointer; }
+input[type="color"] {
+  padding: 2px;
+  height: 38px;
+  width: 100%;
+  cursor: pointer;
+  border-radius: 7px;
+}
+select option { background: #fff; }
+
 .dl-btn {
   width: 100%;
-  padding: 11px;
-  font-size: 14px;
-  border-radius: 8px;
+  padding: 13px;
+  font-size: 16px;
+  border-radius: 9px;
   border: none;
-  background: linear-gradient(135deg, var(--gold), #a07c20);
-  color: #1a1200;
+  background: linear-gradient(135deg, #0a7cff, #0056b3);
+  color: #fff;
   font-weight: 700;
   cursor: pointer;
   font-family: inherit;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
   transition: opacity 0.2s, transform 0.15s;
-  margin-top: auto;
+  margin-top: 4px;
 }
-.dl-btn:hover { opacity: 0.9; transform: translateY(-1px); }
-.dl-btn:active { transform: translateY(0); }
-
-/* Text position indicator */
-.pos-indicator {
-  font-family: monospace;
-  font-size: 11px;
-  color: var(--accent);
-  text-align: center;
-  padding: 3px 0;
-}
-
-/* Touch support */
-.canvas-area { touch-action: none; }
+.dl-btn:active { opacity: 0.88; transform: scale(0.99); }
 </style>
 </head>
 <body>
 
-<div class="app">
+<h3>MIC Prathiba Sangamam</h3>
 
-  <!-- TOP BAR -->
-  <div class="topbar">
-    <h3>🎓 MIC Prathiba Sangamam</h3>
-    <button class="admin-btn" id="adminToggleBtn" onclick="toggleAdmin()">⚙ Admin</button>
-  </div>
+<canvas id="canvas" width="2480" height="2953"></canvas>
 
-  <!-- CANVAS -->
-  <div class="canvas-area" id="canvasArea">
-    <canvas id="canvas" width="2480" height="2953"></canvas>
-  </div>
+<div class="controls">
 
-  <!-- SIDEBAR -->
-  <div class="sidebar">
-
-    <!-- VIEWER SECTION -->
-    <div class="section-title">Certificate Details</div>
-
+  <!-- Photo & Name -->
+  <div class="row">
     <div class="field">
       <label>Photo</label>
       <input type="file" id="upload" accept="image/*">
     </div>
-
     <div class="field">
       <label>Name</label>
       <input type="text" id="nameInput" placeholder="Enter name">
     </div>
-
-    <div class="row-2">
-      <div class="field">
-        <label>Class</label>
-        <select id="classSelect">
-          <option value="5th">5th</option>
-          <option value="7th">7th</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>Result</label>
-        <select id="resultSelect">
-          <option value="Distinction">Distinction</option>
-          <option value="Top Plus">Top Plus</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="drag-note">
-      📷 <span>Drag</span> photo to reposition · <span>Scroll</span> to zoom
-    </div>
-
-    <!-- ADMIN SECTION -->
-    <div class="admin-section" id="adminPanel">
-      <div class="section-title">Admin Settings</div>
-
-      <div class="row-2">
-        <div class="field">
-          <label>Name Font Size</label>
-          <input type="number" id="nameSize" value="120" min="40" max="300">
-        </div>
-        <div class="field">
-          <label>Details Font Size</label>
-          <input type="number" id="detailSize" value="90" min="30" max="250">
-        </div>
-      </div>
-
-      <div class="row-2">
-        <div class="field">
-          <label>Line Gap</label>
-          <input type="number" id="lineSpacing" value="20" min="0" max="200">
-        </div>
-        <div class="field">
-          <label>Text Color</label>
-          <div class="color-row">
-            <input type="color" id="textColor" value="#ffffff">
-            <span class="hex-label" id="colorHex">#ffffff</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="drag-note">
-        🖱 <span>Drag text on canvas</span> to move · position is remembered
-      </div>
-      <div class="pos-indicator" id="posIndicator">Text Y: —</div>
-
-      <div class="row-2">
-        <div class="field">
-          <label>Text X (px)</label>
-          <input type="number" id="textXInput" value="1240">
-        </div>
-        <div class="field">
-          <label>Text Y (px)</label>
-          <input type="number" id="textYInput" value="2003">
-        </div>
-      </div>
-    </div>
-
-    <button class="dl-btn" onclick="downloadImage()">⬇ Download Certificate</button>
-
   </div>
+
+  <!-- Class & Result -->
+  <div class="row">
+    <div class="field">
+      <label>Class</label>
+      <select id="classSelect">
+        <option value="5th">5th</option>
+        <option value="7th">7th</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Result</label>
+      <select id="resultSelect">
+        <option value="Distinction">Distinction</option>
+        <option value="Top Plus">Top Plus</option>
+      </select>
+    </div>
+  </div>
+
+  <button class="dl-btn" onclick="downloadImage()">⬇ Download</button>
+
 </div>
 
 <script>
+// ── EDIT THESE VALUES TO ADJUST TEXT POSITION & STYLE ──
+const CFG = {
+  nameSize:   78,        // Name Font Size
+  detailSize: 67,        // Details Font Size
+  lineGap:    18,        // Line Gap
+  textColor:  "#ffffff", // Text Colour
+  textX:      812,       // Text X (px)
+  textY:      2369       // Text Y (px)
+};
+// ─────────────────────────────────────────────────────
+
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
-const canvasArea = document.getElementById("canvasArea");
 
 let userImage = null;
+let photoScale = 1, photoPosX = 0, photoPosY = 0;
+let photoDragging = false, dragStartX, dragStartY, startPX, startPY;
+
 const frameImage = new Image();
 frameImage.crossOrigin = "anonymous";
 frameImage.src = "frame.png";
-
-// Photo drag state
-let photoScale = 1, photoPosX = 0, photoPosY = 0;
-let photoDragging = false, photoDragStartX, photoDragStartY, photoStartPosX, photoStartPosY;
-
-// Text drag state
-let textDragging = false, textDragStartX, textDragStartY, textStartX, textStartY;
-let isAdmin = false;
-
-// Text position (canvas coords)
-let textX = 1240, textY = 2003;
-
-function g(id) { return document.getElementById(id); }
-function gv(id, def) { const el = g(id); return el ? el.value : def; }
 
 function drawCanvas() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   if (userImage) {
-    let w = userImage.width * photoScale;
-    let h = userImage.height * photoScale;
-    ctx.drawImage(userImage, photoPosX, photoPosY, w, h);
+    ctx.drawImage(userImage, photoPosX, photoPosY,
+      userImage.width * photoScale, userImage.height * photoScale);
   }
 
   if (frameImage.complete && frameImage.naturalWidth) {
     ctx.drawImage(frameImage, 0, 0, canvas.width, canvas.height);
   }
 
-  const name = gv("nameInput", "");
-  const cls = gv("classSelect", "5th");
-  const res = gv("resultSelect", "Distinction");
-  const nameSize = parseInt(gv("nameSize", 120));
-  const detailSize = parseInt(gv("detailSize", 90));
-  const lineSpacing = parseInt(gv("lineSpacing", 20));
-  const textColor = gv("textColor", "#ffffff");
+  const name = document.getElementById("nameInput").value || "";
+  const cls  = document.getElementById("classSelect").value;
+  const res  = document.getElementById("resultSelect").value;
 
-  ctx.fillStyle = textColor;
-  ctx.textAlign = "center";
+  ctx.fillStyle    = CFG.textColor;
+  ctx.textAlign    = "center";
+  ctx.textBaseline = "alphabetic";
 
-  // Line 1: Name
-  ctx.font = `700 ${nameSize}px 'Anek Malayalam'`;
-  ctx.fillText(name, textX, textY);
+  ctx.font = `700 ${CFG.nameSize}px 'Anek Malayalam'`;
+  ctx.fillText(name, CFG.textX, CFG.textY);
 
-  // Line 2: Class - Result
-  ctx.font = `600 ${detailSize}px 'Anek Malayalam'`;
-  ctx.fillText(`${cls} - ${res}`, textX, textY + nameSize + lineSpacing);
-
-  // Update position indicator
-  g("posIndicator").textContent = `Text: (${Math.round(textX)}, ${Math.round(textY)})`;
-
-  // Sync number inputs silently
-  const xIn = g("textXInput"), yIn = g("textYInput");
-  if (xIn && document.activeElement !== xIn) xIn.value = Math.round(textX);
-  if (yIn && document.activeElement !== yIn) yIn.value = Math.round(textY);
+  ctx.font = `600 ${CFG.detailSize}px 'Anek Malayalam'`;
+  ctx.fillText(`${cls} - ${res}`, CFG.textX, CFG.textY + CFG.nameSize + CFG.lineGap);
 }
 
-// ── Canvas coord helper ──
-function canvasCoords(e, isTouch) {
+// ── Canvas coordinate helper ──
+function coords(e, touch) {
   const rect = canvas.getBoundingClientRect();
-  const scaleX = canvas.width / rect.width;
-  const scaleY = canvas.height / rect.height;
-  const src = isTouch ? e.touches[0] : e;
-  return {
-    x: (src.clientX - rect.left) * scaleX,
-    y: (src.clientY - rect.top) * scaleY
-  };
+  const sx = canvas.width / rect.width;
+  const sy = canvas.height / rect.height;
+  const src = touch ? e.touches[0] : e;
+  return { x: (src.clientX - rect.left) * sx, y: (src.clientY - rect.top) * sy };
 }
 
-// ── Hit test: is point near text? ──
-function isNearText(cx, cy) {
-  if (!isAdmin) return false;
-  const nameSize = parseInt(gv("nameSize", 120));
-  const detailSize = parseInt(gv("detailSize", 90));
-  const lineSpacing = parseInt(gv("lineSpacing", 20));
-  const totalH = nameSize + lineSpacing + detailSize;
-  const hitPad = 120;
-  return (
-    cx > textX - 800 && cx < textX + 800 &&
-    cy > textY - nameSize - hitPad && cy < textY + totalH + hitPad
-  );
-}
-
-// ── Mouse events ──
+// ── Mouse drag ──
 canvas.addEventListener("mousedown", e => {
-  const { x, y } = canvasCoords(e, false);
-  if (isNearText(x, y)) {
-    textDragging = true;
-    textDragStartX = x; textDragStartY = y;
-    textStartX = textX; textStartY = textY;
-    canvas.style.cursor = "move";
-  } else {
-    photoDragging = true;
-    photoDragStartX = x; photoDragStartY = y;
-    photoStartPosX = photoPosX; photoStartPosY = photoPosY;
-    canvas.style.cursor = "grabbing";
-  }
+  const c = coords(e, false);
+  photoDragging = true;
+  dragStartX = c.x; dragStartY = c.y;
+  startPX = photoPosX; startPY = photoPosY;
 });
-
 window.addEventListener("mousemove", e => {
-  const { x, y } = canvasCoords(e, false);
-  if (textDragging) {
-    textX = textStartX + (x - textDragStartX);
-    textY = textStartY + (y - textDragStartY);
-    drawCanvas();
-  } else if (photoDragging) {
-    photoPosX = photoStartPosX + (x - photoDragStartX);
-    photoPosY = photoStartPosY + (y - photoDragStartY);
-    drawCanvas();
-  } else {
-    canvas.style.cursor = isNearText(x, y) ? "move" : "default";
-  }
+  if (!photoDragging) return;
+  const c = coords(e, false);
+  photoPosX = startPX + (c.x - dragStartX);
+  photoPosY = startPY + (c.y - dragStartY);
+  drawCanvas();
 });
+window.addEventListener("mouseup", () => photoDragging = false);
 
-window.addEventListener("mouseup", () => {
-  textDragging = false;
-  photoDragging = false;
-  canvas.style.cursor = "default";
-});
-
-// ── Touch events ──
+// ── Touch drag ──
 canvas.addEventListener("touchstart", e => {
   e.preventDefault();
-  const { x, y } = canvasCoords(e, true);
-  if (isNearText(x, y)) {
-    textDragging = true;
-    textDragStartX = x; textDragStartY = y;
-    textStartX = textX; textStartY = textY;
-  } else {
-    photoDragging = true;
-    photoDragStartX = x; photoDragStartY = y;
-    photoStartPosX = photoPosX; photoStartPosY = photoPosY;
-  }
+  const c = coords(e, true);
+  photoDragging = true;
+  dragStartX = c.x; dragStartY = c.y;
+  startPX = photoPosX; startPY = photoPosY;
 }, { passive: false });
-
 canvas.addEventListener("touchmove", e => {
   e.preventDefault();
-  const { x, y } = canvasCoords(e, true);
-  if (textDragging) {
-    textX = textStartX + (x - textDragStartX);
-    textY = textStartY + (y - textDragStartY);
-    drawCanvas();
-  } else if (photoDragging) {
-    photoPosX = photoStartPosX + (x - photoDragStartX);
-    photoPosY = photoStartPosY + (y - photoDragStartY);
-    drawCanvas();
-  }
+  if (!photoDragging) return;
+  const c = coords(e, true);
+  photoPosX = startPX + (c.x - dragStartX);
+  photoPosY = startPY + (c.y - dragStartY);
+  drawCanvas();
 }, { passive: false });
+canvas.addEventListener("touchend", () => photoDragging = false);
 
-canvas.addEventListener("touchend", () => {
-  textDragging = false;
-  photoDragging = false;
-});
-
-// ── Wheel zoom (photo) ──
+// ── Scroll zoom ──
 canvas.addEventListener("wheel", e => {
   e.preventDefault();
-  photoScale += e.deltaY * -0.001;
-  photoScale = Math.min(Math.max(0.2, photoScale), 8);
+  photoScale = Math.min(Math.max(0.1, photoScale - e.deltaY * 0.001), 10);
   drawCanvas();
 }, { passive: false });
 
-// ── Text X/Y number inputs (admin) ──
-["textXInput", "textYInput"].forEach(id => {
-  const el = g(id);
-  if (el) {
-    el.addEventListener("input", () => {
-      textX = parseFloat(gv("textXInput", 1240));
-      textY = parseFloat(gv("textYInput", 2003));
-      drawCanvas();
-    });
-  }
-});
-
 // ── Upload ──
-g("upload").addEventListener("change", function(e) {
+document.getElementById("upload").addEventListener("change", function(e) {
   const reader = new FileReader();
   reader.onload = ev => {
     const img = new Image();
@@ -520,54 +260,19 @@ g("upload").addEventListener("change", function(e) {
   reader.readAsDataURL(e.target.files[0]);
 });
 
-// ── Live inputs ──
-["nameInput", "classSelect", "resultSelect"].forEach(id => {
-  g(id).addEventListener("input", drawCanvas);
-});
-
-["nameSize", "detailSize", "lineSpacing"].forEach(id => {
-  const el = g(id);
-  if (el) el.addEventListener("input", drawCanvas);
-});
-
-g("textColor").addEventListener("input", function() {
-  g("colorHex").textContent = this.value;
-  drawCanvas();
-});
+["nameInput", "classSelect", "resultSelect"].forEach(id =>
+  document.getElementById(id).addEventListener("input", drawCanvas)
+);
 
 // ── Download ──
 function downloadImage() {
-  const name = (gv("nameInput", "certificate") || "certificate").trim();
-  const link = document.createElement("a");
-  link.download = name + ".png";
-  link.href = canvas.toDataURL("image/png");
-  link.click();
+  const name = (document.getElementById("nameInput").value || "certificate").trim();
+  const a = document.createElement("a");
+  a.download = name + ".png";
+  a.href = canvas.toDataURL("image/png");
+  a.click();
 }
-
-// ── Admin toggle ──
-function toggleAdmin() {
-  const panel = g("adminPanel");
-  const btn = g("adminToggleBtn");
-  if (isAdmin) {
-    isAdmin = false;
-    panel.classList.remove("show");
-    btn.textContent = "⚙ Admin";
-    btn.classList.remove("active");
-  } else {
-    const pass = prompt("Enter Admin Password:");
-    if (pass === "micadmin") {
-      isAdmin = true;
-      panel.classList.add("show");
-      btn.textContent = "✓ Admin Logout";
-      btn.classList.add("active");
-    } else if (pass !== null) {
-      alert("Incorrect Password");
-    }
-  }
-}
-
 window.downloadImage = downloadImage;
-window.toggleAdmin = toggleAdmin;
 
 frameImage.onload = drawCanvas;
 frameImage.onerror = drawCanvas;
