@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MIC Prathiba Sangamam</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+body{
+margin:0;
+font-family:"Anek Malayalam",sans-serif;
+background:linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+min-height: 100vh;
+display: flex;
+flex-direction: column;
+align-items: center;
+padding: 10px;
+box-sizing: border-box;
+}
+
+.container{
+background: white;
+padding: 15px;
+border-radius: 12px;
+box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+width: 100%;
+max-width: 600px; /* Increased max-width for better fit */
+box-sizing: border-box;
+display: flex;
+flex-direction: column;
+height: calc(100vh - 20px); /* Fit to window height */
+}
+
+h3 {
+margin: 0 0 10px 0;
+color: #333;
+font-weight: 700;
+font-size: 22px;
+text-align: center;
+}
+
+canvas{
+width: 100%;
+height: auto;
+max-height: calc(100vh - 220px); /* Dynamic height to fit window */
+object-fit: contain;
+border-radius: 8px;
+background:#eee;
+margin-bottom: 15px;
+box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.row {
+display: flex;
+gap: 10px;
+margin-bottom: 10px;
+width: 100%;
+}
+
+.input-group {
+flex: 1;
+text-align: left;
+}
+
+label {
+display: block;
+margin-bottom: 4px;
+font-weight: 600;
+color: #555;
+font-size: 14px;
+}
+
+input, select {
+width: 100%;
+padding: 10px;
+font-size: 15px;
+border-radius: 8px;
+border: 2px solid #e0e0e0;
+background: #fafafa;
+transition: border-color 0.3s;
+box-sizing: border-box;
+font-family: inherit;
+}
+
+input:focus, select:focus {
+border-color: #0a7cff;
+outline: none;
+background: #fff;
+}
+
+button{
+width: 100%;
+padding: 12px;
+margin-top: 5px;
+font-size: 17px;
+border-radius: 8px;
+border: none;
+background: linear-gradient(45deg, #0a7cff, #0056b3);
+color: white;
+font-weight: bold;
+cursor: pointer;
+transition: transform 0.2s, box-shadow 0.2s;
+}
+
+button:hover {
+transform: translateY(-2px);
+box-shadow: 0 5px 15px rgba(10, 124, 255, 0.3);
+}
+
+/* Responsive adjustments for very small screens */
+@media (max-width: 400px) {
+    .row {
+        flex-direction: column;
+    }
+    canvas {
+        max-height: 50vh;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h3>MIC Prathiba Sangamam</h3>
+
+<canvas id="canvas" width="2480" height="2953"></canvas>
+
+<div class="controls">
+
+<!-- Row 1: Upload and Name -->
+<div class="row">
+<div class="input-group">
+<label>Photo</label>
+<input type="file" id="upload" accept="image/*">
+</div>
+<div class="input-group">
+<label>Name</label>
+<input type="text" id="nameInput" placeholder="Enter Name">
+</div>
+</div>
+
+<!-- Row 2: Class and Result -->
+<div class="row">
+<div class="input-group">
+<label>Class</label>
+<select id="classSelect">
+<option value="5th">5th</option>
+<option value="7th">7th</option>
+</select>
+</div>
+<div class="input-group">
+<label>Result</label>
+<select id="resultSelect">
+<option value="Distinction">Distinction</option>
+<option value="Top Plus">Top Plus</option>
+</select>
+</div>
+</div>
+
+<button onclick="downloadImage()">Download Image</button>
+
+</div>
+
+</div>
+
+<script>
+
+const canvas=document.getElementById("canvas");
+const ctx=canvas.getContext("2d");
+
+let userImage=null;
+let frameImage=new Image();
+frameImage.src="frame.png";
+
+let scale=1;
+let posX=0;
+let posY=0;
+
+let dragging=false;
+let startX,startY;
+
+// Default values for hidden controls
+const defaults = {
+    nameSize: 120,
+    classSize: 90,
+    resultSize: 90,
+    pos1: 2000,
+    pos2: 2000,
+    pos3: 2000
+};
+
+// Helper function to safely get value
+function getValue(id, def) {
+    const el = document.getElementById(id);
+    return el ? el.value : def;
+}
+
+function drawCanvas(){
+
+ctx.clearRect(0,0,canvas.width,canvas.height);
+
+if(userImage){
+    let w=userImage.width*scale;
+    let h=userImage.height*scale;
+    ctx.drawImage(userImage,posX,posY,w,h);
+}
+
+// Ensure frame is loaded
+if(frameImage.complete) { 
+    ctx.drawImage(frameImage,0,0,canvas.width,canvas.height);
+}
+
+let name=getValue("nameInput", "");
+let cls=getValue("classSelect", "5th");
+let res=getValue("resultSelect", "Distinction");
+
+// Use values from inputs if they exist, otherwise use defaults
+let nameSize=getValue("nameSize", defaults.nameSize);
+let classSize=getValue("classSize", defaults.classSize);
+let resultSize=getValue("resultSize", defaults.resultSize);
+
+let y1=getValue("pos1", defaults.pos1);
+let y2=getValue("pos2", defaults.pos2);
+let y3=getValue("pos3", defaults.pos3);
+
+let col1=canvas.width/6;
+let col2=canvas.width/2;
+let col3=canvas.width*5/6;
+
+ctx.textAlign="center";
+ctx.fillStyle="#000";
+
+drawColumn(col1,y1,name,cls,res,nameSize,classSize,resultSize);
+drawColumn(col2,y2,name,cls,res,nameSize,classSize,resultSize);
+drawColumn(col3,y3,name,cls,res,nameSize,classSize,resultSize);
+
+}
+
+function drawColumn(x,y,name,cls,res,nameSize,classSize,resultSize){
+    ctx.font="600 "+nameSize+"px Anek Malayalam";
+    ctx.fillText(name,x,y);
+    
+    ctx.font="600 "+classSize+"px Anek Malayalam";
+    ctx.fillText(cls,x,y+parseInt(classSize)+10);
+    
+    ctx.font="600 "+resultSize+"px Anek Malayalam";
+    ctx.fillText(res,x,y+parseInt(classSize)+parseInt(resultSize)+25);
+}
+
+const uploadEl = document.getElementById("upload");
+if(uploadEl) {
+    uploadEl.addEventListener("change",function(e){
+        let reader=new FileReader();
+        reader.onload=function(event){
+            let img=new Image();
+            img.onload=function(){
+                userImage=img;
+                scale=canvas.width/img.width;
+                posX=0;
+                posY=0;
+                drawCanvas();
+            };
+            img.src=event.target.result;
+        };
+        reader.readAsDataURL(e.target.files[0]);
+    });
+}
+
+// Listen for inputs on the specific controls we kept
+const inputs = ["nameInput", "classSelect", "resultSelect"];
+inputs.forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.addEventListener("input", drawCanvas);
+});
+
+// Drag logic variables
+let dragStartX, dragStartY, startPosX, startPosY;
+
+canvas.addEventListener("mousedown", e => {
+    dragging = true;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    
+    dragStartX = (e.clientX - rect.left) * scaleX;
+    dragStartY = (e.clientY - rect.top) * scaleY;
+    
+    startPosX = posX;
+    startPosY = posY;
+});
+
+canvas.addEventListener("mousemove", e => {
+    if(!dragging) return;
+    
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    
+    const mouseX = (e.clientX - rect.left) * scaleX;
+    const mouseY = (e.clientY - rect.top) * scaleY;
+    
+    posX = startPosX + (mouseX - dragStartX);
+    posY = startPosY + (mouseY - dragStartY);
+    
+    drawCanvas();
+});
+
+window.addEventListener("mouseup", () => dragging = false);
+
+canvas.addEventListener("wheel", e => {
+    e.preventDefault();
+    const zoomSpeed = 0.001;
+    scale += e.deltaY * -zoomSpeed;
+    scale = Math.min(Math.max(0.5, scale), 5);
+    drawCanvas();
+});
+
+function downloadImage(){
+    let name=getValue("nameInput", "campaign");
+    let link=document.createElement("a");
+    link.download=name+".png";
+    link.href=canvas.toDataURL();
+    link.click();
+}
+
+window.downloadImage = downloadImage;
+
+frameImage.onload = drawCanvas;
+
+</script>
+
+</body>
+</html>
