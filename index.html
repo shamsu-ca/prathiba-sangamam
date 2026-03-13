@@ -4,476 +4,574 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MIC Prathiba Sangamam</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@500;600;700&display=swap" rel="stylesheet">
-
+<link href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-body{
-margin:0;
-font-family:"Anek Malayalam",sans-serif;
-background:linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-min-height: 100vh;
-display: flex;
-flex-direction: column;
-align-items: center;
-padding: 10px;
-box-sizing: border-box;
+:root {
+  --gold: #c8a94a;
+  --gold-light: #f0d080;
+  --dark: #1a1a2e;
+  --panel-bg: #16213e;
+  --panel-border: #0f3460;
+  --accent: #e94560;
+  --text: #eee;
+  --muted: #888;
+  --input-bg: #0f2040;
+  --input-border: #1e4070;
 }
 
-.container{
-background: white;
-padding: 15px;
-border-radius: 12px;
-box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-width: 100%;
-max-width: 600px;
-box-sizing: border-box;
-display: flex;
-flex-direction: column;
-height: calc(100vh - 20px);
-position: relative;
+body {
+  font-family: 'Anek Malayalam', sans-serif;
+  background: var(--dark);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  overflow: hidden;
 }
 
-/* Header & Admin Button */
-.header-row {
-display: flex;
-justify-content: space-between;
-align-items: center;
-margin-bottom: 10px;
-width: 100%;
+.app {
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  grid-template-rows: 48px 1fr;
+  gap: 0;
 }
 
-h3 {
-margin: 0;
-color: #333;
-font-weight: 700;
-font-size: 22px;
-text-align: left;
+/* ── TOP BAR ── */
+.topbar {
+  grid-column: 1 / -1;
+  background: var(--panel-bg);
+  border-bottom: 1px solid var(--panel-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 18px;
+  z-index: 10;
+}
+
+.topbar h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--gold-light);
+  letter-spacing: 0.04em;
 }
 
 .admin-btn {
-background: transparent;
-color: #888;
-border: 1px solid #ddd;
-padding: 5px 10px;
-font-size: 12px;
-border-radius: 4px;
-cursor: pointer;
-width: auto;
-margin: 0;
-transition: all 0.2s;
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--input-border);
+  padding: 5px 14px;
+  font-size: 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+  letter-spacing: 0.03em;
+}
+.admin-btn:hover { color: var(--text); border-color: var(--gold); }
+.admin-btn.active { background: rgba(200,169,74,0.15); color: var(--gold); border-color: var(--gold); }
+
+/* ── CANVAS AREA ── */
+.canvas-area {
+  background: #111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  cursor: crosshair;
 }
 
-.admin-btn:hover {
-background: #f0f0f0;
-color: #333;
+canvas {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 4px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+  display: block;
 }
 
-.admin-btn.active {
-background: #ffecb3;
-color: #856404;
-border-color: #ffc107;
+/* ── SIDEBAR ── */
+.sidebar {
+  background: var(--panel-bg);
+  border-left: 1px solid var(--panel-border);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 16px;
+  gap: 12px;
 }
 
-canvas{
-width: 100%;
-height: auto;
-max-height: calc(100vh - 240px); /* Adjusted for header */
-object-fit: contain;
-border-radius: 8px;
-background:#eee;
-margin-bottom: 15px;
-box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--panel-border); border-radius: 2px; }
+
+.section-title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  text-transform: uppercase;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--panel-border);
 }
 
-.row {
-display: flex;
-gap: 10px;
-margin-bottom: 10px;
-width: 100%;
-}
-
-.input-group {
-flex: 1;
-text-align: left;
-}
+.field { display: flex; flex-direction: column; gap: 5px; }
 
 label {
-display: block;
-margin-bottom: 4px;
-font-weight: 600;
-color: #555;
-font-size: 14px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.05em;
 }
 
-input, select {
-width: 100%;
-padding: 10px;
-font-size: 15px;
-border-radius: 8px;
-border: 2px solid #e0e0e0;
-background: #fafafa;
-transition: border-color 0.3s;
-box-sizing: border-box;
-font-family: inherit;
+input[type="text"], input[type="file"], select, input[type="number"] {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 13px;
+  border-radius: 6px;
+  border: 1px solid var(--input-border);
+  background: var(--input-bg);
+  color: var(--text);
+  font-family: inherit;
+  transition: border-color 0.2s;
+  outline: none;
 }
+input:focus, select:focus { border-color: var(--gold); }
+input[type="file"] { padding: 6px 8px; font-size: 12px; color: var(--muted); cursor: pointer; }
+select option { background: var(--panel-bg); }
 
-input:focus, select:focus {
-border-color: #0a7cff;
-outline: none;
-background: #fff;
-}
+.row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 
-/* Admin Panel Styling */
-.admin-panel {
-display: none; /* Hidden by default */
-background: #fffbe6;
-border: 1px solid #ffe58f;
-border-radius: 8px;
-padding: 15px;
-margin-bottom: 15px;
-width: 100%;
-box-sizing: border-box;
-}
-
-.admin-panel.show {
-display: block;
-}
-
-.admin-section-title {
-font-size: 14px;
-font-weight: 700;
-color: #d48806;
-margin: 0 0 10px 0;
-text-transform: uppercase;
-}
-
-.color-row {
-display: flex;
-align-items: center;
-gap: 10px;
-}
-
+/* Color row */
+.color-row { display: flex; align-items: center; gap: 8px; }
 input[type="color"] {
-padding: 0;
-height: 40px;
-width: 60px;
-cursor: pointer;
+  width: 36px;
+  height: 32px;
+  padding: 2px;
+  border-radius: 5px;
+  cursor: pointer;
+  flex-shrink: 0;
+  background: var(--input-bg);
+}
+.hex-label { font-family: monospace; font-size: 12px; color: var(--muted); }
+
+/* Admin panel */
+.admin-section {
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  border: 1px solid rgba(200,169,74,0.25);
+  border-radius: 8px;
+  padding: 12px;
+  background: rgba(200,169,74,0.04);
+}
+.admin-section.show { display: flex; }
+.admin-section .section-title { color: var(--gold); border-color: rgba(200,169,74,0.3); }
+
+/* Position drag notice */
+.drag-note {
+  font-size: 11px;
+  color: var(--muted);
+  background: rgba(255,255,255,0.04);
+  border-radius: 5px;
+  padding: 6px 8px;
+  line-height: 1.5;
+}
+.drag-note span { color: var(--gold-light); }
+
+/* Download button */
+.dl-btn {
+  width: 100%;
+  padding: 11px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: none;
+  background: linear-gradient(135deg, var(--gold), #a07c20);
+  color: #1a1200;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  letter-spacing: 0.04em;
+  transition: opacity 0.2s, transform 0.15s;
+  margin-top: auto;
+}
+.dl-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+.dl-btn:active { transform: translateY(0); }
+
+/* Text position indicator */
+.pos-indicator {
+  font-family: monospace;
+  font-size: 11px;
+  color: var(--accent);
+  text-align: center;
+  padding: 3px 0;
 }
 
-button#downloadBtn{
-width: 100%;
-padding: 12px;
-margin-top: 5px;
-font-size: 17px;
-border-radius: 8px;
-border: none;
-background: linear-gradient(45deg, #0a7cff, #0056b3);
-color: white;
-font-weight: bold;
-cursor: pointer;
-transition: transform 0.2s, box-shadow 0.2s;
-}
-
-button#downloadBtn:hover {
-transform: translateY(-2px);
-box-shadow: 0 5px 15px rgba(10, 124, 255, 0.3);
-}
-
-@media (max-width: 400px) {
-    .row { flex-direction: column; }
-    canvas { max-height: 45vh; }
-}
-
+/* Touch support */
+.canvas-area { touch-action: none; }
 </style>
 </head>
-
 <body>
 
-<div class="container">
+<div class="app">
 
-<!-- Header Row -->
-<div class="header-row">
-    <h3>MIC Prathiba Sangamam</h3>
-    <button class="admin-btn" onclick="toggleAdmin()">Admin Login</button>
-</div>
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <h3>🎓 MIC Prathiba Sangamam</h3>
+    <button class="admin-btn" id="adminToggleBtn" onclick="toggleAdmin()">⚙ Admin</button>
+  </div>
 
-<canvas id="canvas" width="2480" height="2953"></canvas>
+  <!-- CANVAS -->
+  <div class="canvas-area" id="canvasArea">
+    <canvas id="canvas" width="2480" height="2953"></canvas>
+  </div>
 
-<!-- Hidden Admin Panel -->
-<div id="adminPanel" class="admin-panel">
-    <div class="admin-section-title">Admin Settings</div>
-    
-    <!-- Row: Font Sizes -->
-    <div class="row">
-        <div class="input-group">
-            <label>Name Size</label>
-            <input type="number" id="nameSize" value="120">
-        </div>
-        <div class="input-group">
-            <label>Details Size</label>
-            <input type="number" id="detailSize" value="90">
-        </div>
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+
+    <!-- VIEWER SECTION -->
+    <div class="section-title">Certificate Details</div>
+
+    <div class="field">
+      <label>Photo</label>
+      <input type="file" id="upload" accept="image/*">
     </div>
 
-    <!-- Row: Position -->
-    <div class="row">
-        <div class="input-group">
-            <label>Y Position (from Bottom)</label>
-            <input type="number" id="yPosInput" value="950">
-        </div>
-        <div class="input-group">
-            <label>Line Spacing</label>
-            <input type="number" id="lineSpacing" value="20">
-        </div>
+    <div class="field">
+      <label>Name</label>
+      <input type="text" id="nameInput" placeholder="Enter name">
     </div>
 
-    <!-- Row: Colors -->
-    <div class="row">
-        <div class="input-group">
-            <label>Text Color</label>
-            <div class="color-row">
-                <input type="color" id="textColor" value="#ffffff">
-                <span id="colorHex" style="font-family:monospace; color:#666;">#ffffff</span>
-            </div>
-        </div>
+    <div class="row-2">
+      <div class="field">
+        <label>Class</label>
+        <select id="classSelect">
+          <option value="5th">5th</option>
+          <option value="7th">7th</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Result</label>
+        <select id="resultSelect">
+          <option value="Distinction">Distinction</option>
+          <option value="Top Plus">Top Plus</option>
+        </select>
+      </div>
     </div>
-</div>
 
-<!-- Main Viewer Controls -->
-<div class="controls">
+    <div class="drag-note">
+      📷 <span>Drag</span> photo to reposition · <span>Scroll</span> to zoom
+    </div>
 
-<div class="row">
-<div class="input-group">
-<label>Photo</label>
-<input type="file" id="upload" accept="image/*">
-</div>
-<div class="input-group">
-<label>Name</label>
-<input type="text" id="nameInput" placeholder="Enter Name">
-</div>
-</div>
+    <!-- ADMIN SECTION -->
+    <div class="admin-section" id="adminPanel">
+      <div class="section-title">Admin Settings</div>
 
-<div class="row">
-<div class="input-group">
-<label>Class</label>
-<select id="classSelect">
-<option value="5th">5th</option>
-<option value="7th">7th</option>
-</select>
-</div>
-<div class="input-group">
-<label>Result</label>
-<select id="resultSelect">
-<option value="Distinction">Distinction</option>
-<option value="Top Plus">Top Plus</option>
-</select>
-</div>
-</div>
+      <div class="row-2">
+        <div class="field">
+          <label>Name Font Size</label>
+          <input type="number" id="nameSize" value="120" min="40" max="300">
+        </div>
+        <div class="field">
+          <label>Details Font Size</label>
+          <input type="number" id="detailSize" value="90" min="30" max="250">
+        </div>
+      </div>
 
-<button id="downloadBtn" onclick="downloadImage()">Download Image</button>
+      <div class="row-2">
+        <div class="field">
+          <label>Line Gap</label>
+          <input type="number" id="lineSpacing" value="20" min="0" max="200">
+        </div>
+        <div class="field">
+          <label>Text Color</label>
+          <div class="color-row">
+            <input type="color" id="textColor" value="#ffffff">
+            <span class="hex-label" id="colorHex">#ffffff</span>
+          </div>
+        </div>
+      </div>
 
-</div>
+      <div class="drag-note">
+        🖱 <span>Drag text on canvas</span> to move · position is remembered
+      </div>
+      <div class="pos-indicator" id="posIndicator">Text Y: —</div>
 
+      <div class="row-2">
+        <div class="field">
+          <label>Text X (px)</label>
+          <input type="number" id="textXInput" value="1240">
+        </div>
+        <div class="field">
+          <label>Text Y (px)</label>
+          <input type="number" id="textYInput" value="2003">
+        </div>
+      </div>
+    </div>
+
+    <button class="dl-btn" onclick="downloadImage()">⬇ Download Certificate</button>
+
+  </div>
 </div>
 
 <script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+const canvasArea = document.getElementById("canvasArea");
 
-// ==========================================
-// CORE LOGIC
-// ==========================================
+let userImage = null;
+const frameImage = new Image();
+frameImage.crossOrigin = "anonymous";
+frameImage.src = "frame.png";
 
-const canvas=document.getElementById("canvas");
-const ctx=canvas.getContext("2d");
+// Photo drag state
+let photoScale = 1, photoPosX = 0, photoPosY = 0;
+let photoDragging = false, photoDragStartX, photoDragStartY, photoStartPosX, photoStartPosY;
 
-let userImage=null;
-let frameImage=new Image();
-frameImage.src="frame.png";
+// Text drag state
+let textDragging = false, textDragStartX, textDragStartY, textStartX, textStartY;
+let isAdmin = false;
 
-let scale=1;
-let posX=0;
-let posY=0;
-let dragging=false;
+// Text position (canvas coords)
+let textX = 1240, textY = 2003;
 
-// Helper to get value
-function getVal(id, def) {
-    const el = document.getElementById(id);
-    return el ? el.value : def;
+function g(id) { return document.getElementById(id); }
+function gv(id, def) { const el = g(id); return el ? el.value : def; }
+
+function drawCanvas() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  if (userImage) {
+    let w = userImage.width * photoScale;
+    let h = userImage.height * photoScale;
+    ctx.drawImage(userImage, photoPosX, photoPosY, w, h);
+  }
+
+  if (frameImage.complete && frameImage.naturalWidth) {
+    ctx.drawImage(frameImage, 0, 0, canvas.width, canvas.height);
+  }
+
+  const name = gv("nameInput", "");
+  const cls = gv("classSelect", "5th");
+  const res = gv("resultSelect", "Distinction");
+  const nameSize = parseInt(gv("nameSize", 120));
+  const detailSize = parseInt(gv("detailSize", 90));
+  const lineSpacing = parseInt(gv("lineSpacing", 20));
+  const textColor = gv("textColor", "#ffffff");
+
+  ctx.fillStyle = textColor;
+  ctx.textAlign = "center";
+
+  // Line 1: Name
+  ctx.font = `700 ${nameSize}px 'Anek Malayalam'`;
+  ctx.fillText(name, textX, textY);
+
+  // Line 2: Class - Result
+  ctx.font = `600 ${detailSize}px 'Anek Malayalam'`;
+  ctx.fillText(`${cls} - ${res}`, textX, textY + nameSize + lineSpacing);
+
+  // Update position indicator
+  g("posIndicator").textContent = `Text: (${Math.round(textX)}, ${Math.round(textY)})`;
+
+  // Sync number inputs silently
+  const xIn = g("textXInput"), yIn = g("textYInput");
+  if (xIn && document.activeElement !== xIn) xIn.value = Math.round(textX);
+  if (yIn && document.activeElement !== yIn) yIn.value = Math.round(textY);
 }
 
-// Draw Function
-function drawCanvas(){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-
-    // Draw User Image
-    if(userImage){
-        let w=userImage.width*scale;
-        let h=userImage.height*scale;
-        ctx.drawImage(userImage,posX,posY,w,h);
-    }
-
-    // Draw Frame
-    if(frameImage.complete) { 
-        ctx.drawImage(frameImage,0,0,canvas.width,canvas.height);
-    }
-
-    // Get Dynamic Values
-    const name = document.getElementById("nameInput").value;
-    const cls = document.getElementById("classSelect").value;
-    const res = document.getElementById("resultSelect").value;
-    
-    const nameSize = parseInt(getVal("nameSize", 120));
-    const detailSize = parseInt(getVal("detailSize", 90));
-    const yPosFromBottom = parseInt(getVal("yPosInput", 950));
-    const lineSpacing = parseInt(getVal("lineSpacing", 20));
-    const textColor = getVal("textColor", "#ffffff");
-
-    // Calculate Positions
-    const textY = canvas.height - yPosFromBottom;
-    
-    // Column X Coordinates
-    const col1 = canvas.width / 6;
-    const col2 = canvas.width / 2;
-    const col3 = canvas.width * 5 / 6;
-
-    // Style
-    ctx.fillStyle = textColor;
-    ctx.textAlign = "center";
-
-    // Draw Columns
-    drawTextBlock(col1, textY, name, cls, res, nameSize, detailSize, lineSpacing);
-    drawTextBlock(col2, textY, name, cls, res, nameSize, detailSize, lineSpacing);
-    drawTextBlock(col3, textY, name, cls, res, nameSize, detailSize, lineSpacing);
+// ── Canvas coord helper ──
+function canvasCoords(e, isTouch) {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+  const src = isTouch ? e.touches[0] : e;
+  return {
+    x: (src.clientX - rect.left) * scaleX,
+    y: (src.clientY - rect.top) * scaleY
+  };
 }
 
-// Updated Text Layout: 2 Lines
-function drawTextBlock(x, y, name, cls, res, nameSize, detailSize, spacing){
-    // Line 1: Name
-    ctx.font = `600 ${nameSize}px 'Anek Malayalam'`;
-    ctx.fillText(name, x, y);
-
-    // Line 2: Class - Result
-    const line2 = `${cls} - ${res}`;
-    ctx.font = `600 ${detailSize}px 'Anek Malayalam'`;
-    ctx.fillText(line2, x, y + nameSize + spacing);
+// ── Hit test: is point near text? ──
+function isNearText(cx, cy) {
+  if (!isAdmin) return false;
+  const nameSize = parseInt(gv("nameSize", 120));
+  const detailSize = parseInt(gv("detailSize", 90));
+  const lineSpacing = parseInt(gv("lineSpacing", 20));
+  const totalH = nameSize + lineSpacing + detailSize;
+  const hitPad = 120;
+  return (
+    cx > textX - 800 && cx < textX + 800 &&
+    cy > textY - nameSize - hitPad && cy < textY + totalH + hitPad
+  );
 }
 
-// ==========================================
-// EVENT LISTENERS
-// ==========================================
-
-// Upload
-document.getElementById("upload").addEventListener("change", function(e){
-    let reader=new FileReader();
-    reader.onload=function(event){
-        let img=new Image();
-        img.onload=function(){
-            userImage=img;
-            scale=canvas.width/img.width;
-            posX=0;
-            posY=0;
-            drawCanvas();
-        };
-        img.src=event.target.result;
-    };
-    reader.readAsDataURL(e.target.files[0]);
-});
-
-// Viewer Inputs
-["nameInput", "classSelect", "resultSelect"].forEach(id => {
-    document.getElementById(id).addEventListener("input", drawCanvas);
-});
-
-// Admin Inputs (check if they exist first)
-const adminInputs = ["nameSize", "detailSize", "yPosInput", "lineSpacing", "textColor"];
-adminInputs.forEach(id => {
-    const el = document.getElementById(id);
-    if(el) {
-        el.addEventListener("input", drawCanvas);
-        // Special case for color picker to show hex code
-        if(id === "textColor") {
-            el.addEventListener("input", function() {
-                document.getElementById("colorHex").innerText = this.value;
-            });
-        }
-    }
-});
-
-// Drag Logic
-let dragStartX, dragStartY, startPosX, startPosY;
-
+// ── Mouse events ──
 canvas.addEventListener("mousedown", e => {
-    dragging = true;
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-    dragStartX = (e.clientX - rect.left) * scaleX;
-    dragStartY = (e.clientY - rect.top) * scaleY;
-    startPosX = posX;
-    startPosY = posY;
+  const { x, y } = canvasCoords(e, false);
+  if (isNearText(x, y)) {
+    textDragging = true;
+    textDragStartX = x; textDragStartY = y;
+    textStartX = textX; textStartY = textY;
+    canvas.style.cursor = "move";
+  } else {
+    photoDragging = true;
+    photoDragStartX = x; photoDragStartY = y;
+    photoStartPosX = photoPosX; photoStartPosY = photoPosY;
+    canvas.style.cursor = "grabbing";
+  }
 });
 
-canvas.addEventListener("mousemove", e => {
-    if(!dragging) return;
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-    const mouseX = (e.clientX - rect.left) * scaleX;
-    const mouseY = (e.clientY - rect.top) * scaleY;
-    posX = startPosX + (mouseX - dragStartX);
-    posY = startPosY + (mouseY - dragStartY);
+window.addEventListener("mousemove", e => {
+  const { x, y } = canvasCoords(e, false);
+  if (textDragging) {
+    textX = textStartX + (x - textDragStartX);
+    textY = textStartY + (y - textDragStartY);
     drawCanvas();
+  } else if (photoDragging) {
+    photoPosX = photoStartPosX + (x - photoDragStartX);
+    photoPosY = photoStartPosY + (y - photoDragStartY);
+    drawCanvas();
+  } else {
+    canvas.style.cursor = isNearText(x, y) ? "move" : "default";
+  }
 });
 
-window.addEventListener("mouseup", () => dragging = false);
+window.addEventListener("mouseup", () => {
+  textDragging = false;
+  photoDragging = false;
+  canvas.style.cursor = "default";
+});
 
+// ── Touch events ──
+canvas.addEventListener("touchstart", e => {
+  e.preventDefault();
+  const { x, y } = canvasCoords(e, true);
+  if (isNearText(x, y)) {
+    textDragging = true;
+    textDragStartX = x; textDragStartY = y;
+    textStartX = textX; textStartY = textY;
+  } else {
+    photoDragging = true;
+    photoDragStartX = x; photoDragStartY = y;
+    photoStartPosX = photoPosX; photoStartPosY = photoPosY;
+  }
+}, { passive: false });
+
+canvas.addEventListener("touchmove", e => {
+  e.preventDefault();
+  const { x, y } = canvasCoords(e, true);
+  if (textDragging) {
+    textX = textStartX + (x - textDragStartX);
+    textY = textStartY + (y - textDragStartY);
+    drawCanvas();
+  } else if (photoDragging) {
+    photoPosX = photoStartPosX + (x - photoDragStartX);
+    photoPosY = photoStartPosY + (y - photoDragStartY);
+    drawCanvas();
+  }
+}, { passive: false });
+
+canvas.addEventListener("touchend", () => {
+  textDragging = false;
+  photoDragging = false;
+});
+
+// ── Wheel zoom (photo) ──
 canvas.addEventListener("wheel", e => {
-    e.preventDefault();
-    scale += e.deltaY * -0.001;
-    scale = Math.min(Math.max(0.5, scale), 5);
-    drawCanvas();
+  e.preventDefault();
+  photoScale += e.deltaY * -0.001;
+  photoScale = Math.min(Math.max(0.2, photoScale), 8);
+  drawCanvas();
+}, { passive: false });
+
+// ── Text X/Y number inputs (admin) ──
+["textXInput", "textYInput"].forEach(id => {
+  const el = g(id);
+  if (el) {
+    el.addEventListener("input", () => {
+      textX = parseFloat(gv("textXInput", 1240));
+      textY = parseFloat(gv("textYInput", 2003));
+      drawCanvas();
+    });
+  }
 });
 
-// Download
-function downloadImage(){
-    const name = document.getElementById("nameInput").value || "campaign";
-    const link = document.createElement("a");
-    link.download = name + ".png";
-    link.href = canvas.toDataURL();
-    link.click();
+// ── Upload ──
+g("upload").addEventListener("change", function(e) {
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const img = new Image();
+    img.onload = () => {
+      userImage = img;
+      photoScale = canvas.width / img.width;
+      photoPosX = 0; photoPosY = 0;
+      drawCanvas();
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(e.target.files[0]);
+});
+
+// ── Live inputs ──
+["nameInput", "classSelect", "resultSelect"].forEach(id => {
+  g(id).addEventListener("input", drawCanvas);
+});
+
+["nameSize", "detailSize", "lineSpacing"].forEach(id => {
+  const el = g(id);
+  if (el) el.addEventListener("input", drawCanvas);
+});
+
+g("textColor").addEventListener("input", function() {
+  g("colorHex").textContent = this.value;
+  drawCanvas();
+});
+
+// ── Download ──
+function downloadImage() {
+  const name = (gv("nameInput", "certificate") || "certificate").trim();
+  const link = document.createElement("a");
+  link.download = name + ".png";
+  link.href = canvas.toDataURL("image/png");
+  link.click();
 }
 
-// Admin Toggle
+// ── Admin toggle ──
 function toggleAdmin() {
-    const panel = document.getElementById("adminPanel");
-    const btn = document.querySelector(".admin-btn");
-    
-    // Simple Password Check (Client side only for UI control)
-    // In a real app this would be server validated.
-    if(panel.classList.contains("show")) {
-        panel.classList.remove("show");
-        btn.innerText = "Admin Login";
-        btn.classList.remove("active");
-    } else {
-        let pass = prompt("Enter Admin Password:");
-        if(pass === "admin") { // Password is 'admin'
-            panel.classList.add("show");
-            btn.innerText = "Admin Logout";
-            btn.classList.add("active");
-        } else if (pass !== null) {
-            alert("Incorrect Password");
-        }
+  const panel = g("adminPanel");
+  const btn = g("adminToggleBtn");
+  if (isAdmin) {
+    isAdmin = false;
+    panel.classList.remove("show");
+    btn.textContent = "⚙ Admin";
+    btn.classList.remove("active");
+  } else {
+    const pass = prompt("Enter Admin Password:");
+    if (pass === "micadmin") {
+      isAdmin = true;
+      panel.classList.add("show");
+      btn.textContent = "✓ Admin Logout";
+      btn.classList.add("active");
+    } else if (pass !== null) {
+      alert("Incorrect Password");
     }
+  }
 }
 
-// Make functions global
 window.downloadImage = downloadImage;
 window.toggleAdmin = toggleAdmin;
 
 frameImage.onload = drawCanvas;
-
+frameImage.onerror = drawCanvas;
+drawCanvas();
 </script>
-
 </body>
 </html>
